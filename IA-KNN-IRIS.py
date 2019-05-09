@@ -5,6 +5,17 @@ from operator import itemgetter
 
 rp_global = []
 
+
+'''
+Kill é a quantidade de acertos
+Miss é a quantidade de erros
+previsão, são as classificações geradas pelo algoritmo
+rp_global é a classificação correta 
+se a previsão for igual a classificação correta, incremento kill (acertos)
+se não, incremento miss(erro)
+
+a função retorna a porcentagem de acertos, que é dada por kill(acertos) /kill+miss(total) *100 (para devolver a porcentagem)
+'''
 def calculaPrecisao(previsao):
     kill = 0
     miss = 0
@@ -15,7 +26,16 @@ def calculaPrecisao(previsao):
     taxaPrecisao = (kill/(kill + miss))*100
     return taxaPrecisao
 
-
+'''
+Função Processa resultados
+recebe o retorno de controleTestes(uma lista de lista com todos os k individuos mais próximos para cada teste)
+faz uma votação para classificar os testes. Ou seja: 
+é observado a classificação de cada um dos k individuos próximos
+se for 0, v1 é incrementado
+se for 1, v2 é incrementado
+se for 2, v3 é incrementado
+No final, os individuos são classificados de acordo com o tipo que mais apareceu (O mais votado)
+'''
 def processaResultados(results):
     conclusao = []
     for x in range (len(results)):
@@ -36,7 +56,12 @@ def processaResultados(results):
         elif v1 > v2 and v1 > v3:
             conclusao.append(0)
     return conclusao
+'''
+Função controleTestes
+    a função controleTestes, passa todos os testes na função KNN e armazena seu resultado
 
+retorno, uma lista de lista com todos os k individuos mais próximos para cada teste
+'''
 def controleTestes(treinos,testes,k):
     resultados = []
     for i in range(len(testes)):
@@ -49,6 +74,13 @@ def distanciaEuclidiana(i1, i2, lenght): #Calcula a distância euclidiana entre 
 		distance += pow((i1[x] - i2[x]), 2) #Pow vem de potenciação, assim, i1 - i2 está sendo elevado ao quadrado 
 	return sqrt(distance)#Retorna a raiz do quadrado da subtração de i1 e i2 (valor da distância euclidiana)
 
+'''
+Função KNN
+Classificados são os dados de treino, e teste os dados a serem classifiicados
+e k é a quantidade de elementos proximos/classificados que serão retornados.
+
+o retorno é uma lista com os k elementos proximos para cada individuo
+'''
 def KNN(classificados,teste,k):
     distancias = []
     lenght = len(teste) - 1
@@ -60,7 +92,20 @@ def KNN(classificados,teste,k):
     for x in range(k):
         knn.append(distancias[x][0])
     return knn
+'''
+SelecionaDadosTreino irá separar os dados em treino e teste. 
+SelecionaDadosTreino recebe o ['data'] que são os dados na variavel iris
+e typeFlor são as classificações desses dados (tipo da flor para cada individuo de data)
+x é a quantidade de elementos que irão pro treinamento, o restante servirá para os testes
+iris e typeflor são arrays, assim o tolist() transforma-o em lista (Não consigo remover elementos de um array)
+n é uma variavel de controle
+a função seleciona os x individuos aleatoriamente, insere o tipo dela no final da linha e 
+deleta da lista para que não possa ser escolhido novamente
 
+os valores que sobram na lista serão os dados de teste, assim, não é anexado a resposta.. estas serão armazenadas
+em rp_global para que a taxa de acertos seja gerada futuramente.
+
+'''
 def selecionaDadosTreino(iris,typeFlor,k,x):
     iris = iris.tolist()
     typeFlor = typeFlor.tolist()
@@ -81,6 +126,10 @@ def selecionaDadosTreino(iris,typeFlor,k,x):
     for i in range((t+1)-n):
         rp_global.append(typeFlor[i])
     return controleTestes(treino,iris,k)
+    '''
+    os treinos serão chamados na função  controleTestes(), pois a função KNN recebe todos os dados de treino
+    e um dado de teste para classifica-lo
+    '''
 
 
 if __name__ == "__main__":

@@ -1,9 +1,15 @@
-from sklearn.datasets import load_iris #Carrega o dataset de dados da iris 
+from sklearn.datasets import load_iris #Carrega o dataset de dados da iris
 from random import randint
 from math import sqrt
 from operator import itemgetter
+from numpy import array
+from numpy import choose
+import  numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
 
 rp_global = []
+testes_global = []
 
 
 '''
@@ -43,11 +49,11 @@ def processaResultados(results):
         v2 = 0
         v3 = 0
         for y in range(len(results[x])):
-                if results[x][y][4] < 1:
+                if results[x][y][4] ==  0 :
                     v1 = v1 + 1
                 elif results[x][y][4] == 1:
                     v2 = v2 + 1
-                elif results[x][y][4] > 1:
+                elif results[x][y][4] == 2:
                     v3 =  v3 + 1
         if v2 > v1 and v2 > v3:
             conclusao.append(1)
@@ -82,6 +88,7 @@ e k é a quantidade de elementos proximos/classificados que serão retornados.
 o retorno é uma lista com os k elementos proximos para cada individuo
 '''
 def KNN(classificados,teste,k):
+    testes_global.append(teste)
     distancias = []
     lenght = len(teste) - 1
     for x in range(len(classificados)):
@@ -110,7 +117,7 @@ def selecionaDadosTreino(iris,typeFlor,k,x):
     iris = iris.tolist()
     typeFlor = typeFlor.tolist()
     n=0
-    treino = []
+    treino = [] # Treino recebe 'x' individuos 
     tipos=[]
     t = len(iris)-1
     for i in range (x):
@@ -131,18 +138,85 @@ def selecionaDadosTreino(iris,typeFlor,k,x):
     e um dado de teste para classifica-lo
     '''
 
+def printPrecisao(real, esperado):
+    
+    for i in range (len(real)):
+        if real[i] == esperado [i]:
+            print("[",real[i]," : ",esperado[i],"]", "Acertou  ")
+        else: print ("[",real[i]," : ",esperado[i],"]","Errou  ")
+    
 
 if __name__ == "__main__":
     pass
+    mediaPrecisao = []
     k=5 #Quantidade de individuos próximos
-    x= 100 #Quantidade de individuos para treino
+    x= 100 #Quantidade de individuos para treino - 100/150 -> 66.67%
     votos = []
-    iris = load_iris() 
-    #Carrega o dataset com os dados da iris 
+    iris = load_iris() #Carrega o dataset com os dados da iris 
     resultados = selecionaDadosTreino(iris['data'],iris['target'],k,x) 
     #divide treino e teste e passa os resultados no algoritmo knn retornando os k mais proximos
     votos = processaResultados(resultados)
     #avalia os mais proximos e decide de qual tipo são as flores
     precisao = calculaPrecisao(votos)
-    print("Taxa de precisao: ",precisao)
-    #avalia a taxa de acerto
+    printPrecisao(votos,rp_global)
+    #print("Taxa de acerto: ", precisao)
+    #avalia a taxa de acerto 
+    total = 0
+    #for i in range(100):
+    #total+=mediaPrecisao[i]
+    #print("PRECISAO MEDIA: ",total/100 )
+    #print(array(testes_global[0][3]))
+    #c =testes_global[:len(testes_global)][0]
+    '''    
+    c0 = []
+    c1 = []
+    c2 = []
+    c3 = []
+    for i in range(len(testes_global)):
+        c0.append(testes_global[i][0])
+        c1.append(testes_global[i][1])
+        c2.append(testes_global[i][2])
+        c3.append(testes_global[i][3])
+    '''
+    print(len(testes_global))
+    x = pd.DataFrame(testes_global, columns=['Sepal Length', 'Sepal Width', 'Petal Length', 'Petal Width'])
+    y = pd.DataFrame(votos, columns=['Target'])
+    x2 = pd.DataFrame(testes_global, columns=['Sepal Length', 'Sepal Width', 'Petal Length', 'Petal Width'])
+    y2 = pd.DataFrame(rp_global, columns=['Target'])
+    plt.figure(figsize=(12,3))
+    #print(x)
+    #print(y)
+    #print("------------------------------")
+    #print(x2)
+    #print(y2)
+    colors = np.array(['red', 'green', 'blue'])
+    #nrows=1, ncols=2, plot_number=1
+    plt.subplot(1, 2, 1)
+    plt.scatter(x['Sepal Length'], x['Sepal Width'], c=colors[y['Target']], s=40, alpha=0.8)
+    plt.xlabel("Sepal Length (cm)")
+    plt.ylabel("Sepal Width (cm)")
+    plt.title('Resultado obtido')
+
+    plt.subplot(1,2,2)
+    plt.scatter(x2['Sepal Length'], x2['Sepal Width'], c= colors[y2['Target']], s=40, alpha= 0.8)
+    plt.xlabel("Sepal Length (cm)")
+    plt.ylabel("Sepal Width (cm)")
+    plt.title('Resultado esperado')
+    
+    plt.show()
+
+    colors = np.array(['red', 'green', 'blue'])
+    #nrows=1, ncols=2, plot_number=1
+    plt.subplot(1, 2, 1)
+    plt.scatter(x['Petal Length'], x['Petal Width'], c=colors[y['Target']], s=40, alpha= 0.8)
+    plt.xlabel("Petal Length (cm)")
+    plt.ylabel("Petal Width (cm)")
+    plt.title('Resultados obtidos ')
+
+    plt.subplot(1,2,2)
+    plt.scatter(x2['Petal Length'], x2['Petal Width'], c= colors[y2['Target']], s=40, alpha= 0.8)
+    plt.xlabel("Petal Length (cm)")
+    plt.ylabel("Petal Width (cm)")
+    plt.title('Resultados esperados')
+
+    plt.show()

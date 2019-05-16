@@ -3,8 +3,14 @@ from random import randint
 from math import sqrt
 from operator import itemgetter
 from numpy import array
+from numpy import arange
+import numpy as np
+import pandas as pd
+
+import matplotlib.pyplot as plt
 
 rp_global = []
+teste_global = []
 
 def targetClassificador(data, target):
     tamanho = len(data)
@@ -12,6 +18,7 @@ def targetClassificador(data, target):
     t.sort()
     baixo =  t[tamanho//3]
     medio =  t[2*(tamanho//3)]
+    print("-->",baixo,"medio", medio)
 
 
     for i in range(len(target)):
@@ -75,6 +82,7 @@ def distanciaEuclidiana(i1, i2, lenght): #Calcula a distância euclidiana entre 
 	return sqrt(distance)#Retorna a raiz do quadrado da subtração de i1 e i2 (valor da distância euclidiana)
 
 def KNN(classificados,teste,k):
+    teste_global.append(teste) 
     distancias = []
     lenght = len(teste) - 1
     for x in range(len(classificados)):
@@ -110,11 +118,15 @@ def selecionaDadosTreino(data,target,k,x):
 
 if __name__ == "__main__":
     pass
+
+    mediaPrecisao = []
+    
     k=5 #Quantidade de individuos próximos
     x= 400 #Quantidade de individuos para treino
     votos = []
     target = []
-    boston = load_boston() 
+    boston = load_boston()
+    print(boston.feature_names)
     #Carrega o dataset com os dados da boston
     target = targetClassificador(boston['data'], boston['target'])
     resultados = selecionaDadosTreino(boston['data'],target,k,x)
@@ -122,7 +134,67 @@ if __name__ == "__main__":
     votos = processaResultados(resultados)
     #avalia os mais proximos e decide de qual tipo são as flores
     precisao = calculaPrecisao(votos)
-    print(precisao)
+    #mediaPrecisao.append(precisao)
+    #print(precisao)
+    #print(teste_global)
+    #print("MEDIA DE ACERTO: ", sum(mediaPrecisao)/100)
+
+    x = pd.DataFrame(teste_global, columns = ['CRIM','ZN','INDUS','CHAS','NOX','RM','AGE','DIS','RAD','TAX','PTRATIO'
+    ,'B','LSTAT'])
+    y = pd.DataFrame(rp_global, columns = ['target'])
+    x2 = pd.DataFrame(teste_global, columns = ['CRIM','ZN','INDUS','CHAS','NOX','RM','AGE','DIS','RAD','TAX','PTRATIO'
+    ,'B','LSTAT'])
+    y2 = pd.DataFrame(votos, columns = ['target'])
+    c0 = []
+    c1 = []#'ZN'
+    c2 = []#'INDUS'
+    c3 = []#'CHAS'
+    c4 = []#'NOX'
+    c5 = []#'RM'
+    c6 = []#'AGE'
+    c7 = []#'DIS'
+    c8 = []#'RAD'
+    c9 = []#'TAX'
+    c10 =[]#'PTRATIO'
+    c11 =[]#'B'
+    c12 =[]#'LSTAT'
+    tag = []
+    tag2 = []
+    for i in teste_global:
+        c0.append(i[0])
+        c1.append(i[1])
+        c2.append(i[2])
+        c3.append(i[3])
+        c4.append(i[4])
+        c5.append(i[5])
+        c6.append(i[6])
+        c7.append(i[7])
+        c8.append(i[8])
+        c9.append(i[9])
+        c10.append(i[10])
+        c11.append(i[11])
+        c12.append(i[12])
+    for i in y['target']:
+        tag.append(i)
+    for i in y2['target']:
+        tag2.append(i)
+    
+    plt.figure(figsize=(12,3))
+    colors = array(['r','g','b'])
+    plt.subplot(1, 2, 1)
+    t = [round(i) for i in tag]
+    t2 =[round(i) for i in tag2]
+    plt.scatter(c5, c6, c=colors[t], s=40, alpha=0.8)
+    plt.title('Resultados esperados')
+    plt.xlabel("RM")
+    plt.ylabel('AGE')
+    plt.subplot(1,2,2)
+    plt.scatter(c5, c6,  c=colors[t2], s=40, alpha=0.8)
+    plt.xlabel("RM")
+    plt.ylabel('AGE')
+    plt.title('Resultados obtidos')
+    plt.show()
     #print (len(resultados))
     #print("Taxa de precisao: ",precisao)
     #avalia a taxa de acerto
+    

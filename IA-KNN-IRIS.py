@@ -167,28 +167,13 @@ if __name__ == "__main__":
     #print("PRECISAO MEDIA: ",total/100 )
     #print(array(testes_global[0][3]))
     #c =testes_global[:len(testes_global)][0]
-    '''    
-    c0 = []
-    c1 = []
-    c2 = []
-    c3 = []
-    for i in range(len(testes_global)):
-        c0.append(testes_global[i][0])
-        c1.append(testes_global[i][1])
-        c2.append(testes_global[i][2])
-        c3.append(testes_global[i][3])
-    '''
+   
     print(len(testes_global))
     x = pd.DataFrame(testes_global, columns=['Sepal Length', 'Sepal Width', 'Petal Length', 'Petal Width'])
     y = pd.DataFrame(votos, columns=['Target'])
     x2 = pd.DataFrame(testes_global, columns=['Sepal Length', 'Sepal Width', 'Petal Length', 'Petal Width'])
     y2 = pd.DataFrame(rp_global, columns=['Target'])
     plt.figure(figsize=(12,3))
-    #print(x)
-    #print(y)
-    #print("------------------------------")
-    #print(x2)
-    #print(y2)
     colors = np.array(['red', 'green', 'blue'])
     #nrows=1, ncols=2, plot_number=1
     plt.subplot(1, 2, 1)
